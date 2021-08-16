@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
@@ -11,6 +12,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -36,6 +38,18 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        ScoreManager.Instance.LoadNameAndScore();
+
+        if (ScoreManager.Instance.highScoreName.Length != 0 && ScoreManager.Instance.highScore != 0)
+        {
+            BestScoreText.gameObject.SetActive(true);
+            string highScoreName = ScoreManager.Instance.highScoreName;
+            int highScore = ScoreManager.Instance.highScore;
+            BestScoreText.text = "Best Score: " + highScoreName + ": " + highScore;
+        }
+        else
+            BestScoreText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -70,7 +84,33 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        UpdateHighScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void UpdateHighScore()
+    {
+        if (ScoreManager.Instance.highScore != 0)
+        {
+            int previousHighScore = ScoreManager.Instance.highScore;
+            if (m_Points > previousHighScore)
+            {
+                ScoreManager.Instance.highScore = m_Points;
+                ScoreManager.Instance.highScoreName = ScoreManager.Instance.playerName;
+            }
+        }
+
+        else
+        {
+            ScoreManager.Instance.highScore = m_Points;
+            ScoreManager.Instance.highScoreName = ScoreManager.Instance.playerName;
+        }
+
+        BestScoreText.gameObject.SetActive(true);
+        string highScoreName = ScoreManager.Instance.highScoreName;
+        int highScore = ScoreManager.Instance.highScore;
+        BestScoreText.text = "Best Score: " + highScoreName + ": " + highScore;
+        ScoreManager.Instance.SaveNameAndScore();
     }
 }
