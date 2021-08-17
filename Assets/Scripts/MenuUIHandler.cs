@@ -11,25 +11,22 @@ using UnityEditor;
 
 public class MenuUIHandler : MonoBehaviour
 {
-    public TMP_InputField nameInput;
     public TextMeshProUGUI nameText;
     public GameObject highScoreGroup;
 
-    private string highScoreName;
-    private int highScore;
+    private HighScore highScore;
 
     public void Start()
     {
-        nameInput.onValueChanged.AddListener(delegate { NameChange(); }) ;
-
         ScoreManager.Instance.LoadNameAndScore();
+        ScoreManager.Instance.scoresList.Sort();
+        ScoreManager.Instance.scoresList.Reverse();
 
-        if (ScoreManager.Instance.highScoreName.Length != 0 && ScoreManager.Instance.highScore != 0)
+        if (ScoreManager.Instance.scoresList.Count != 0)
         {
             highScoreGroup.gameObject.SetActive(true);
-            highScoreName = ScoreManager.Instance.highScoreName;
-            highScore = ScoreManager.Instance.highScore;
-            nameText.text = highScoreName + ": " + highScore;
+            highScore = ScoreManager.Instance.scoresList[0];
+            nameText.text = highScore.playerName + ": " + highScore.playerScore;
         }
         else
             highScoreGroup.gameObject.SetActive(false);
@@ -48,11 +45,5 @@ public class MenuUIHandler : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-
-    public void NameChange()
-    {
-        ScoreManager.Instance.playerName = nameInput.text;
-        ScoreManager.Instance.SaveNameAndScore();
     }
 }

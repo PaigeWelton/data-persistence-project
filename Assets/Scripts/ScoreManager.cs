@@ -1,15 +1,16 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Json;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
 
-    public string playerName;
-    public string highScoreName;
-    public int highScore;
+    public List<HighScore> scoresList = new List<HighScore>();
 
     private void Awake()
     {
@@ -28,19 +29,17 @@ public class ScoreManager : MonoBehaviour
     [System.Serializable]
     class SaveData
     {
-        public string playerName;
-        public string highScoreName;
-        public int highScore;
+        public List<HighScore> scoresList = new List<HighScore>();
     }
 
     public void SaveNameAndScore()
     {
         SaveData data = new SaveData();
-        data.playerName = playerName;
-        data.highScore = highScore;
-        data.highScoreName = highScoreName;
 
-        string json = JsonUtility.ToJson(data);
+        data.scoresList = scoresList;
+
+        var json = JsonConvert.SerializeObject(scoresList);
+        //string json = JsonUtility.ToJson(data);
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 
@@ -50,11 +49,10 @@ public class ScoreManager : MonoBehaviour
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
+            //SaveData deserializedData = JsonConvert.DeserializeObject<SaveData>(json);
+            //SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            playerName = data.playerName;
-            highScore = data.highScore;
-            highScoreName = data.highScoreName;
+            scoresList = (List<HighScore>)JsonConvert.DeserializeObject(json, typeof(List<HighScore>));
         }
     }
 }
