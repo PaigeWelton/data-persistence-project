@@ -52,6 +52,7 @@ public class MainManager : MonoBehaviour
         isTypingName = false;
         ScoreManager.Instance.LoadNameAndScore();
 
+        //only displays best score at the top if there is a score to display
         if (ScoreManager.Instance.scoresList.Count != 0)
         {
             BestScoreText.gameObject.SetActive(true);
@@ -102,12 +103,14 @@ public class MainManager : MonoBehaviour
 
     public void UpdateHighScore()
     {
+        //adds first score if there are none in the list
         if (ScoreManager.Instance.scoresList.Count == 0)
         {
             newHighScoreGroup.gameObject.SetActive(true);
             isTypingName = true;
             nameInput.onValueChanged.AddListener(delegate { NameButtonValidation(); });
         }
+        //sorts the list then compares new score to the lowest score in the list
         else
         {
             ScoreManager.Instance.scoresList.Sort();
@@ -123,8 +126,11 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    //makes name enter button interactable if there is text in the input field
     public void NameButtonValidation()
     {
+        nameEnterButton.interactable = false;
+
         if (nameInput.text.Length == 0)
         {
             nameEnterButton.interactable = false;
@@ -133,6 +139,7 @@ public class MainManager : MonoBehaviour
             nameEnterButton.interactable = true;
     }
 
+    //called by in game button when player is finished entering name
     public void NameChange()
     {
         playerName = nameInput.text;
@@ -143,15 +150,18 @@ public class MainManager : MonoBehaviour
 
     public void SaveNewScore()
     {
+        //add and sort list
         ScoreManager.Instance.scoresList.Add(new HighScore(playerName, m_Points));
         ScoreManager.Instance.scoresList.Sort();
         ScoreManager.Instance.scoresList.Reverse();
 
+        //remove last list item if list is over 10 items
         if (ScoreManager.Instance.scoresList.Count > 10)
         {
             ScoreManager.Instance.scoresList.RemoveAt(10);
         }
 
+        //display entire list in the console for now
         foreach (HighScore score in ScoreManager.Instance.scoresList)
         {
             Debug.Log(score.playerName + ": " + score.playerScore);
