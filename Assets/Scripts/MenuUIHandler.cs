@@ -13,6 +13,7 @@ public class MenuUIHandler : MonoBehaviour
 {
     public TextMeshProUGUI nameText;
     public GameObject highScoreGroup;
+    public HighScoresDialog highScoresDialog;
 
     private HighScore highScore;
 
@@ -45,5 +46,10 @@ public class MenuUIHandler : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    public void ShowHighScores()
+    {
+        Instantiate(highScoresDialog, transform);
     }
 }

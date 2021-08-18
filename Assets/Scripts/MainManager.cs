@@ -20,6 +20,9 @@ public class MainManager : MonoBehaviour
     public TMP_InputField nameInput;
     public Button nameEnterButton;
 
+    public HighScoresDialog highScoresDialog;
+    public Canvas uiCanvas;
+
     private string playerName;
     private bool isTypingName;
     
@@ -99,6 +102,11 @@ public class MainManager : MonoBehaviour
         UpdateHighScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void OpenHighScores()
+    {
+        Instantiate(highScoresDialog, uiCanvas.transform);
     }
 
     public void UpdateHighScore()
